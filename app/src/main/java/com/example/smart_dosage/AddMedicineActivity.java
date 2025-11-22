@@ -47,6 +47,32 @@ public class AddMedicineActivity extends AppCompatActivity {
             dlg.show();
         });
 
+        EditText etStart = findViewById(R.id.et_start_date);
+        EditText etEnd = findViewById(R.id.et_end_date);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        etStart.setText(sdf.format(cal.getTime()));
+        etStart.setFocusable(false);
+        etStart.setClickable(true);
+        etEnd.setFocusable(false);
+        etEnd.setClickable(true);
+        etStart.setOnClickListener(v -> {
+            java.util.Calendar c = java.util.Calendar.getInstance();
+            new android.app.DatePickerDialog(AddMedicineActivity.this, (picker, y, m, d) -> {
+                java.util.Calendar picked = java.util.Calendar.getInstance();
+                picked.set(y, m, d);
+                etStart.setText(sdf.format(picked.getTime()));
+            }, c.get(java.util.Calendar.YEAR), c.get(java.util.Calendar.MONTH), c.get(java.util.Calendar.DAY_OF_MONTH)).show();
+        });
+        etEnd.setOnClickListener(v -> {
+            java.util.Calendar c = java.util.Calendar.getInstance();
+            new android.app.DatePickerDialog(AddMedicineActivity.this, (picker, y, m, d) -> {
+                java.util.Calendar picked = java.util.Calendar.getInstance();
+                picked.set(y, m, d);
+                etEnd.setText(sdf.format(picked.getTime()));
+            }, c.get(java.util.Calendar.YEAR), c.get(java.util.Calendar.MONTH), c.get(java.util.Calendar.DAY_OF_MONTH)).show();
+        });
+
         findViewById(R.id.btn_photo).setOnClickListener(v -> {
             Intent pick = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(pick, REQ_PHOTO);

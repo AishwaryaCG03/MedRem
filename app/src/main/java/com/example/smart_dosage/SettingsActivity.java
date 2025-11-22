@@ -38,5 +38,18 @@ public class SettingsActivity extends AppCompatActivity {
                 }
             }
         });
+
+        android.content.SharedPreferences sp = getSharedPreferences("settings", MODE_PRIVATE);
+        ((android.widget.EditText)findViewById(R.id.et_ai_base_url)).setText(sp.getString("ai_base_url", ""));
+        ((android.widget.EditText)findViewById(R.id.et_ai_api_key)).setText(sp.getString("ai_api_key", ""));
+        findViewById(R.id.btn_save_ai).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String base = ((android.widget.EditText)findViewById(R.id.et_ai_base_url)).getText().toString();
+                String key = ((android.widget.EditText)findViewById(R.id.et_ai_api_key)).getText().toString();
+                sp.edit().putString("ai_base_url", base).putString("ai_api_key", key).apply();
+                android.widget.Toast.makeText(SettingsActivity.this, "AI settings saved", android.widget.Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

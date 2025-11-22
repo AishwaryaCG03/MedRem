@@ -20,6 +20,11 @@
 
         <TextView android:id="@+id/desc_caretaker" android:layout_width="match_parent" android:layout_height="wrap_content" />
 
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="AI Settings" android:textStyle="bold" android:paddingTop="16dp" />
+        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_ai_base_url" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Base URL (e.g. https://api-inference.huggingface.co/models/...)" />
+        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_ai_api_key" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="API Key" android:inputType="textPassword" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/btn_save_ai" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="💾 Save AI Settings" />
+
     </LinearLayout>
 
 </ScrollView>
