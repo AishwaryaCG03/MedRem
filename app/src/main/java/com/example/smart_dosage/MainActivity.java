@@ -91,11 +91,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, SupplyActivity.class));
             }
         });
-        View ach = findViewById(R.id.btn_achievements);
-        if (ach != null) ach.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) { startActivity(new Intent(MainActivity.this, AchievementsActivity.class)); }
-        });
         View ct = findViewById(R.id.btn_caretakers);
         if (ct != null) ct.setOnClickListener(new View.OnClickListener() {
             @Override

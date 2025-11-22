@@ -40,7 +40,8 @@ public class SupplyManager {
     }
 
     private static void evaluate(Context context, Medicine m, Supply s) {
-        int dosesPerDay = m.dosesPerDay;
+        int dosesPerDay = Math.max(1, m.dosesPerDay);
+        if (s.refillLeadDays <= 0) return; // disabled
         int threshold = dosesPerDay * s.refillLeadDays;
         if (s.remaining <= threshold) scheduleRefill(context, m);
     }

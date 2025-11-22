@@ -73,14 +73,24 @@ public class ChatActivity extends AppCompatActivity {
             String base = sp.getString("ai_base_url", null);
             String key = sp.getString("ai_api_key", null);
             if (base == null || key == null) return null;
-            java.net.URL url = new java.net.URL(base);
+            boolean isGemini = base.contains("generativelanguage.googleapis.com");
+            String fullUrl = isGemini ? (base + (base.contains("?")?"&":"?") + "key=" + key) : base;
+            java.net.URL url = new java.net.URL(fullUrl);
             java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestProperty("Authorization", "Bearer " + key);
+            if (!isGemini) conn.setRequestProperty("Authorization", "Bearer " + key);
             conn.setDoOutput(true);
-            String body = "{\"inputs\": " + JSONObject.quote(q) + "}";
-            try (java.io.OutputStream os = conn.getOutputStream()) { os.write(body.getBytes()); }
+            String body;
+            if (isGemini) {
+                org.json.JSONObject part = new org.json.JSONObject(); part.put("text", q);
+                org.json.JSONObject content = new org.json.JSONObject(); content.put("parts", new org.json.JSONArray().put(part));
+                org.json.JSONObject root = new org.json.JSONObject(); root.put("contents", new org.json.JSONArray().put(content));
+                body = root.toString();
+            } else {
+                body = "{\"inputs\": " + JSONObject.quote(q) + "}";
+            }
+            try (java.io.OutputStream os = conn.getOutputStream()) { os.write(body.getBytes(java.nio.charset.StandardCharsets.UTF_8)); }
             int code = conn.getResponseCode();
             java.io.InputStream is = code >= 200 && code < 300 ? conn.getInputStream() : conn.getErrorStream();
             String contentType = conn.getHeaderField("Content-Type");
@@ -105,6 +115,22 @@ public class ChatActivity extends AppCompatActivity {
                         if (c.has("message")) {
                             JSONObject m = c.getJSONObject("message");
                             if (m.has("content")) return m.getString("content");
+                        }
+                    }
+                }
+                if (o.has("candidates")) {
+                    org.json.JSONArray candidates = o.getJSONArray("candidates");
+                    if (candidates.length() > 0) {
+                        org.json.JSONObject cand = candidates.getJSONObject(0);
+                        if (cand.has("content")) {
+                            org.json.JSONObject cObj = cand.getJSONObject("content");
+                            if (cObj.has("parts")) {
+                                org.json.JSONArray parts = cObj.getJSONArray("parts");
+                                if (parts.length() > 0) {
+                                    org.json.JSONObject p0 = parts.getJSONObject(0);
+                                    if (p0.has("text")) return p0.getString("text");
+                                }
+                            }
                         }
                     }
                 }

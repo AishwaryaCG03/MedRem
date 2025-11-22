@@ -1,32 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
-    <Spinner
-        android:id="@+id/sp_medicine"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/et_remaining"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Remaining supply" />
+        android:orientation="vertical"
+        android:padding="16dp">
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/et_lead_days"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Lead days" />
+        <Spinner
+            android:id="@+id/sp_medicine"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_save"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="💾 Save"
-        app:cornerRadius="20dp" />
+        <LinearLayout
+            android:id="@+id/card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:layout_marginTop="12dp"
+            android:background="@android:color/darker_gray">
 
-</LinearLayout>
+            <TextView
+                android:id="@+id/tv_med_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:text="Medicine" />
+
+            <TextView
+                android:id="@+id/tv_days_left"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Estimated days left: 0"
+                android:paddingTop="4dp" />
+
+            <ProgressBar
+                android:id="@+id/pb_supply"
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:max="100"
+                android:progress="0"
+                android:paddingTop="8dp" />
+
+            <TextView
+                android:id="@+id/tv_progress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="0 left out of 0"
+                android:paddingTop="4dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="8dp">
+                <Switch
+                    android:id="@+id/sw_enable_refill"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Enable refill reminder" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_lead_days"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Lead days"
+                    android:inputType="number" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_remaining"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Remaining supply"
+            android:inputType="number" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="💾 Save"
+            app:cornerRadius="20dp" />
+
+    </LinearLayout>
+
+</ScrollView>
