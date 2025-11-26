@@ -63,7 +63,7 @@ public class ChatActivity extends AppCompatActivity {
                 new Thread(() -> {
                     String a = remoteAnswer(q);
                     if (a == null || a.trim().isEmpty()) a = answer(q);
-                    final String fa = a;
+                    final String fa = beautify(a);
                     runOnUiThread(() -> { messages.set(thinkingIndex, new ChatMessage(fa, false)); adapter.notifyItemChanged(thinkingIndex); rv.scrollToPosition(adapter.getItemCount()-1); if (typing != null) typing.setVisibility(android.view.View.GONE); if (typingAnim != null) typingAnim.cancel(); typing.setAlpha(1f); });
                 }).start();
             }
@@ -200,6 +200,55 @@ public class ChatActivity extends AppCompatActivity {
         return sb.toString();
     }
 
+    private String beautify(String s) {
+        if (s == null) return "";
+        String t = s.trim();
+        try {
+            if ((t.startsWith("{") && t.endsWith("}")) || (t.startsWith("[") && t.endsWith("]"))) {
+                org.json.JSONObject o = new org.json.JSONObject(t);
+                if (o.has("choices")) {
+                    org.json.JSONArray choices = o.getJSONArray("choices");
+                    if (choices.length() > 0) {
+                        org.json.JSONObject c = choices.getJSONObject(0);
+                        if (c.has("message")) {
+                            org.json.JSONObject m = c.getJSONObject("message");
+                            if (m.has("content")) t = m.getString("content");
+                        } else if (c.has("text")) { t = c.getString("text"); }
+                    }
+                } else if (o.has("candidates")) {
+                    org.json.JSONArray candidates = o.getJSONArray("candidates");
+                    if (candidates.length() > 0) {
+                        org.json.JSONObject cand = candidates.getJSONObject(0);
+                        if (cand.has("content")) {
+                            org.json.JSONObject cObj = cand.getJSONObject("content");
+                            if (cObj.has("parts")) {
+                                org.json.JSONArray parts = cObj.getJSONArray("parts");
+                                if (parts.length() > 0) {
+                                    org.json.JSONObject p0 = parts.getJSONObject(0);
+                                    if (p0.has("text")) t = p0.getString("text");
+                                }
+                            }
+                        }
+                    }
+                } else if (o.has("generated_text")) { t = o.getString("generated_text"); }
+            }
+        } catch (Exception ignore) { }
+        if (t.contains("\"text\"")) {
+            try {
+                java.util.regex.Pattern p = java.util.regex.Pattern.compile("\\\"text\\\"\\s*:\\s*\\\"(.*?)\\\"", java.util.regex.Pattern.DOTALL);
+                java.util.regex.Matcher m = p.matcher(t);
+                if (m.find()) {
+                    String extracted = m.group(1);
+                    t = extracted;
+                }
+            } catch (Exception ignore) {}
+        }
+        t = t.replace("\\n", "\n").replace("\\t", " ").replace("\\r", "");
+        t = t.replace("**", "");
+        t = t.replaceAll("^[\\s\\S]*?candidates[\\s\\S]*?parts[\\s\\S]*?text\\s*:\\s*", "");
+        return t.trim();
+    }
+
     private void addMessage(String text, boolean fromUser) {
         messages.add(new ChatMessage(text, fromUser));
         adapter.notifyItemInserted(messages.size()-1);
@@ -256,8 +305,16 @@ public class ChatActivity extends AppCompatActivity {
             bubble.setTextColor(viewType==1?0xFFFFFFFF:0xFF2C3E50);
             bubble.setLineSpacing(0f, 1.12f);
             bubble.setElevation(4f);
+            int max = (int)(parent.getResources().getDisplayMetrics().widthPixels * 0.85f);
+            bubble.setMaxWidth(max);
+            bubble.setMaxLines(Integer.MAX_VALUE);
+            bubble.setEllipsize(null);
+            if (android.os.Build.VERSION.SDK_INT >= 26) {
+                bubble.setBreakStrategy(android.text.Layout.BREAK_STRATEGY_HIGH_QUALITY);
+                bubble.setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_NORMAL);
+            }
 
-            if (viewType==1) { root.setGravity(android.view.Gravity.END); root.addView(bubble); root.addView(avatar); }
+            if (viewType==1) { root.setGravity(android.view.Gravity.END); root.addView(avatar); root.addView(bubble); }
             else { root.setGravity(android.view.Gravity.START); root.addView(avatar); root.addView(bubble); }
 
             return new VH(root);

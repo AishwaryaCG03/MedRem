@@ -150,14 +150,6 @@
             app:cornerRadius="20dp"
             android:layout_marginTop="12dp" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_side_effects"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="📝 Side‑effect Diary"
-            android:textColor="#000000"
-            app:cornerRadius="20dp"
-            android:layout_marginTop="12dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_budget_view"

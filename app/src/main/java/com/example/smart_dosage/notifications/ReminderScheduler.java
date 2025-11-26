@@ -24,12 +24,14 @@ public class ReminderScheduler {
                 c.set(Calendar.MINUTE, min);
                 c.set(Calendar.SECOND, 0);
                 if (c.getTimeInMillis() < System.currentTimeMillis()) c.add(Calendar.DAY_OF_YEAR, 1);
-                setAlarm(context, m, c.getTimeInMillis());
+                int code = (int)(m.id * 1000 + h * 60 + min);
+                setAlarm(context, m, c.getTimeInMillis(), code);
             }
         } else if (m.scheduleType.equals("EVERY_X_HOURS")) {
             int interval = m.intervalHours != null ? m.intervalHours : 8;
             long trigger = System.currentTimeMillis() + interval * 60L * 60L * 1000L;
-            setAlarm(context, m, trigger);
+            int code = (int)(m.id * 1000 + 999);
+            setAlarm(context, m, trigger, code);
         } else if (m.scheduleType.equals("WEEKDAYS")) {
             List<String> times = m.times;
             List<String> days = m.weekdays;
@@ -46,7 +48,8 @@ public class ReminderScheduler {
                     c.set(Calendar.MINUTE, min);
                     c.set(Calendar.SECOND, 0);
                     if (c.getTimeInMillis() < System.currentTimeMillis()) c.add(Calendar.WEEK_OF_YEAR, 1);
-                    setAlarm(context, m, c.getTimeInMillis());
+                    int code = (int)(m.id * 1000 + dow * 10000 + h * 60 + min);
+                    setAlarm(context, m, c.getTimeInMillis(), code);
                 }
             }
         }
@@ -66,14 +69,14 @@ public class ReminderScheduler {
         }
     }
 
-    private static void setAlarm(Context context, Medicine m, long triggerAtMillis) {
+    private static void setAlarm(Context context, Medicine m, long triggerAtMillis, int requestCode) {
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent i = new Intent(context, ReminderReceiver.class);
         i.putExtra("medicineId", m.id);
         i.putExtra("name", m.name);
         i.putExtra("dose", m.strength + " • " + m.dosageAmount);
         i.putExtra("scheduledAt", triggerAtMillis);
-        PendingIntent pi = PendingIntent.getBroadcast(context, (int) m.id, i, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, i, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMillis, pi);
     }
 
@@ -91,6 +94,15 @@ public class ReminderScheduler {
         long minDelay = 45 * 60_000L;
         long spacing = (m.intervalHours != null ? m.intervalHours : 6) * 60L * 60L * 1000L;
         long trigger = Math.max(base + minDelay, scheduledMillis + spacing / 2);
-        setAlarm(context, m, trigger);
+        int code = (int)(m.id * 1000 + 888);
+        setAlarm(context, m, trigger, code);
+    }
+
+    public static void scheduleAll(Context context) {
+        try {
+            java.util.List<com.example.smart_dosage.data.Medicine> meds = com.example.smart_dosage.data.AppDatabase.get(context).medicineDao().getAllSync();
+            if (meds == null) return;
+            for (com.example.smart_dosage.data.Medicine m : meds) scheduleForMedicine(context, m);
+        } catch (Exception ignore) {}
     }
 }

@@ -38,7 +38,7 @@
         <activity android:name=".CaretakerActivity" android:exported="false" />
         <activity android:name=".SettingsActivity" android:exported="false" />
         <activity android:name=".DoctorPackActivity" android:exported="false" />
-        <activity android:name=".SideEffectsActivity" android:exported="false" />
+        <activity android:name=".PdfViewerActivity" android:exported="false" />
         <activity android:name=".BudgetActivity" android:exported="false" />
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -52,7 +52,7 @@
 
         <receiver android:name="com.example.smart_dosage.notifications.ReminderReceiver" android:exported="false" />
         <receiver android:name="com.example.smart_dosage.notifications.ActionReceiver" android:exported="false" />
-        <receiver android:name="com.example.smart_dosage.notifications.BootReceiver" android:enabled="true" android:exported="false">
+        <receiver android:name="com.example.smart_dosage.notifications.BootReceiver" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>

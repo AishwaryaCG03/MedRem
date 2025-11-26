@@ -114,34 +114,17 @@
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Doctor Pack" android:textStyle="bold" android:textColor="@color/text_primary" android:paddingTop="6dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
-            <com.google.android.material.card.MaterialCardView android:id="@+id/btn_side_effects_home" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_margin="8dp" app:cardCornerRadius="16dp" app:cardUseCompatPadding="true" app:cardBackgroundColor="@color/card_bg" app:strokeColor="@color/accent_green" app:strokeWidth="1dp">
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center_horizontal" android:padding="12dp">
-                    <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_chat" android:tint="@color/accent_green" />
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Side‑effects" android:textStyle="bold" android:textColor="@color/text_primary" android:paddingTop="6dp" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-        </LinearLayout>
-
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
             <com.google.android.material.card.MaterialCardView android:id="@+id/btn_budget_home" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_margin="8dp" app:cardCornerRadius="16dp" app:cardUseCompatPadding="true" app:cardBackgroundColor="@color/card_bg" app:strokeColor="@color/accent_green" app:strokeWidth="1dp">
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center_horizontal" android:padding="12dp">
                     <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_supplies" android:tint="@color/accent_green" />
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Budget" android:textStyle="bold" android:textColor="@color/text_primary" android:paddingTop="6dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
-            <Space android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1" />
         </LinearLayout>
+
+        
     </LinearLayout>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_add"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_add"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="20dp"
-        app:tint="#FFFFFF"
-        app:backgroundTint="#10A37F" />
+    
 
 </androidx.constraintlayout.widget.ConstraintLayout>

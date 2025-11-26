@@ -48,7 +48,18 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        
+        if (android.os.Build.VERSION.SDK_INT >= 31) {
+            android.app.AlarmManager am = (android.app.AlarmManager) getSystemService(android.content.Context.ALARM_SERVICE);
+            if (am != null && !am.canScheduleExactAlarms()) {
+                try {
+                    android.content.Intent i = new android.content.Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+                    startActivity(i);
+                    android.widget.Toast.makeText(this, "Enable exact alarms for reliable reminders", android.widget.Toast.LENGTH_LONG).show();
+                } catch (Exception ignore) {}
+            }
+        }
+
+        com.example.smart_dosage.notifications.ReminderScheduler.scheduleAll(this);
 
         db = AppDatabase.get(this);
         list = findViewById(R.id.medicine_list);
@@ -83,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
                     })
                     .setNegativeButton("Cancel", null)
                     .show();
-        });
+        }, m -> showDetails(m));
         list.setAdapter(adapter);
 
         db.medicineDao().getAll().observe(this, new Observer<List<Medicine>>() {
@@ -136,16 +147,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) { startActivity(new Intent(MainActivity.this, DoctorPackActivity.class)); }
         });
-        View se = findViewById(R.id.btn_side_effects_home);
-        if (se != null) se.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) { startActivity(new Intent(MainActivity.this, SideEffectsActivity.class)); }
-        });
         View bg = findViewById(R.id.btn_budget_home);
         if (bg != null) bg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) { startActivity(new Intent(MainActivity.this, BudgetActivity.class)); }
         });
+        
         if (android.os.Build.VERSION.SDK_INT >= 33) {
             if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
@@ -158,5 +165,53 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void showDetails(com.example.smart_dosage.data.Medicine m){
+        android.widget.LinearLayout cont = new android.widget.LinearLayout(this);
+        cont.setOrientation(android.widget.LinearLayout.VERTICAL);
+        int pad = (int)(16 * getResources().getDisplayMetrics().density);
+        cont.setPadding(pad, pad/2, pad, pad/2);
+        android.widget.TextView t1 = new android.widget.TextView(this);
+        android.widget.TextView t2 = new android.widget.TextView(this);
+        android.widget.TextView t3 = new android.widget.TextView(this);
+        android.widget.TextView t4 = new android.widget.TextView(this);
+        t1.setText("Name: " + (m.name==null?"":m.name));
+        t2.setText("Strength: " + (m.strength==null?"":m.strength));
+        t3.setText("Dose: " + m.dosageAmount + (m.times!=null && !m.times.isEmpty()?"  •  " + String.join(", ", m.times):""));
+        t4.setText("Instructions: " + (m.instructions==null?"":m.instructions));
+        int black = android.graphics.Color.BLACK;
+        t1.setTextColor(black); t2.setTextColor(black); t3.setTextColor(black); t4.setTextColor(black);
+        cont.addView(t1); cont.addView(t2); cont.addView(t3); cont.addView(t4);
+        new android.app.AlertDialog.Builder(this)
+                .setTitle("Medicine")
+                .setView(cont)
+                .setPositiveButton("Edit", (d,w) -> {
+                    android.widget.EditText etName = new android.widget.EditText(MainActivity.this);
+                    android.widget.EditText etStrength = new android.widget.EditText(MainActivity.this);
+                    android.widget.EditText etInstructions = new android.widget.EditText(MainActivity.this);
+                    etName.setHint("Name"); etName.setText(m.name);
+                    etStrength.setHint("Strength"); etStrength.setText(m.strength);
+                    etInstructions.setHint("Instructions"); etInstructions.setText(m.instructions);
+                    android.widget.LinearLayout c2 = new android.widget.LinearLayout(MainActivity.this);
+                    c2.setOrientation(android.widget.LinearLayout.VERTICAL);
+                    c2.setPadding(pad, pad/2, pad, 0);
+                    c2.addView(etName); c2.addView(etStrength); c2.addView(etInstructions);
+                    new android.app.AlertDialog.Builder(MainActivity.this)
+                            .setTitle("Edit medicine")
+                            .setView(c2)
+                            .setPositiveButton("Save", (dd,ww) -> {
+                                m.name = etName.getText().toString();
+                                m.strength = etStrength.getText().toString();
+                                m.instructions = etInstructions.getText().toString();
+                                new Thread(() -> db.medicineDao().update(m)).start();
+                            })
+                            .setNegativeButton("Cancel", null)
+                            .show();
+                })
+                .setNegativeButton("Delete", (d,w) -> {
+                    new Thread(() -> db.medicineDao().delete(m)).start();
+                })
+                .setNeutralButton("Close", null)
+                .show();
+    }
     
 }

@@ -67,9 +67,6 @@ public class SettingsActivity extends AppCompatActivity {
             android.widget.Toast.makeText(SettingsActivity.this, "Escalation settings saved", android.widget.Toast.LENGTH_SHORT).show();
         });
 
-        findViewById(R.id.btn_side_effects).setOnClickListener(v -> {
-            startActivity(new android.content.Intent(SettingsActivity.this, com.example.smart_dosage.SideEffectsActivity.class));
-        });
 
         findViewById(R.id.btn_budget_view).setOnClickListener(v -> {
             startActivity(new android.content.Intent(SettingsActivity.this, com.example.smart_dosage.BudgetActivity.class));

@@ -149,6 +149,7 @@ public class AddMedicineActivity extends AppCompatActivity {
             long id = AppDatabase.get(AddMedicineActivity.this).medicineDao().insert(m);
             m.id = id;
             com.example.smart_dosage.supply.SupplyManager.ensureInitial(AddMedicineActivity.this, m);
+            com.example.smart_dosage.notifications.ReminderScheduler.scheduleForMedicine(AddMedicineActivity.this, m);
             finish();
         }).start();
     }

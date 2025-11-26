@@ -18,14 +18,17 @@ import java.util.List;
 public class MedicineAdapter extends RecyclerView.Adapter<MedicineAdapter.VH> {
     public interface OnScheduleClick { void onClick(Medicine medicine); }
     public interface OnEditClick { void onClick(Medicine medicine); }
+    public interface OnItemClick { void onClick(Medicine medicine); }
 
     private List<Medicine> items = new ArrayList<>();
     private final OnScheduleClick onScheduleClick;
     private final OnEditClick onEditClick;
+    private final OnItemClick onItemClick;
 
-    public MedicineAdapter(OnScheduleClick scheduleListener, OnEditClick editListener) {
+    public MedicineAdapter(OnScheduleClick scheduleListener, OnEditClick editListener, OnItemClick itemListener) {
         this.onScheduleClick = scheduleListener;
         this.onEditClick = editListener;
+        this.onItemClick = itemListener;
     }
 
     public void submit(List<Medicine> list) {
@@ -51,6 +54,7 @@ public class MedicineAdapter extends RecyclerView.Adapter<MedicineAdapter.VH> {
         }
         holder.schedule.setOnClickListener(v -> onScheduleClick.onClick(m));
         if (holder.edit != null) holder.edit.setOnClickListener(v -> onEditClick.onClick(m));
+        holder.itemView.setOnClickListener(v -> { if (onItemClick != null) onItemClick.onClick(m); });
     }
 
     @Override
